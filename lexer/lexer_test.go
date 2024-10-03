@@ -6,14 +6,15 @@ import (
 	"github.com/Tim-PF/MonkeePK/token"
 )
 func TestNextToken(t *testing.T) {
-	input := `let five = 5;
+	// input ist der Test den man laufen lässt. Jedes Zeichen wird zu einem Token!
+	input := `let five = 5;   
  let ten = 10;
  let add = fn(x, y) {
  x + y;
  };
  let result = add(five, ten);
  `
-
+// Test Struktur => simuliert einen Token
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
@@ -56,8 +57,10 @@ func TestNextToken(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
-l := New(input)
+l := New(input)  // New setzt einen Pointer zu Lexer. Der Input ist dann der Input in Lexer. Dann wird jeder Char in Readchar gelesen
 
+
+// Warnungen falls unerwartetes Ergebnis
 for i, tt := range tests {
 	tok := l.NextToken()
 
