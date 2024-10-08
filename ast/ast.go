@@ -1,6 +1,9 @@
+
+
+package ast
+
 import  "github.com/Tim-PF/MonkeePK/token"
 
-package ast 
 type Node interface {
 	TokenLiteral() string
 }

@@ -1,9 +1,9 @@
 package parser
 
 import (
-	 "github.com/Tim-PF/MonkeePK/lexer"
-	 "github.com/Tim.PF/MonkeePK/ast"
-	 "github.com/Tim.PF/MonkeePK/token"
+"github.com/Tim-PF/MonkeePK/lexer"
+"github.com/Tim-PF/MonkeePK/ast"
+"github.com/Tim-PF/MonkeePK/token"
 )
 // Exist of a lexer pointer current and next token
 type Parser struct {
