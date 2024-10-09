@@ -2,10 +2,14 @@
 
 package ast
 
-import  "github.com/Tim-PF/MonkeePK/token"
+import  (
+	"bytes"
+	"github.com/Tim-PF/MonkeePK/token"
+)
 
 type Node interface {
 	TokenLiteral() string
+    String() string
 }
 
 type Statement interface {
@@ -21,6 +25,15 @@ type Expression interface {
 type Program struct {
 	Statements []Statement
 }
+
+func (p *Program) String() string {
+	var out bytes.Buffer
+	for _, s := range p.Statements {
+	out.WriteString(s.String())
+	}
+	return out.String()
+	}
+
 
 // Erstellt die root Node.
 func (p *Program) TokenLiteral() string {
@@ -64,3 +77,37 @@ type ExpressionStatement struct {
 
 func (es *ExpressionStatement) statementNode() {}
 func (es *ExpressionStatement) TokenLiteral() string {return es.Token.Literal}
+
+// Stringifies Statements 
+
+func (ls *LetStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(ls.Name.String())
+	out.WriteString(" = ")
+
+	if ls.Value != nil {
+		out.WriteString(ls.Value.String())
+	}
+    out.WriteString(";")
+	return out.String()
+	}
+
+func (rs *ReturnStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(rs.TokenLiteral() + " ")
+	if rs.ReturnValue != nil {
+		out.WriteString(rs.ReturnValue.String())
+	}
+	out.WriteString(";")
+	return out.String()
+	}
+
+func (es *ExpressionStatement) String() string {
+	if es.Expression != nil {
+		return es.Expression.String()
+	}
+	return ""
+	}
+
+func (i *Identifier) String() string { return i.Value }
