@@ -6,6 +6,20 @@ import (
 "github.com/Tim-PF/MonkeePK/ast"
 "github.com/Tim-PF/MonkeePK/token"
 )
+
+// Order of precedence Expressions
+const (
+	_ int = iota
+	LOWEST
+	EQUALS
+	// ==
+	LESSGREATER // > or <
+	SUM
+	// +
+	PRODUCT
+	PREFIX
+	CALL
+)
 // Exist of a lexer pointer current and next token
 type Parser struct {
 	l *lexer.Lexer
@@ -27,6 +41,9 @@ func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l,
 		         errors: []string{},
 				}
+
+	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.registerPrefix(token.IDENT, p.parseIdentifier)
 
 	//Read two tokens, so curToken and peekToken are both set
 	p.nextToken()
@@ -64,7 +81,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
-	   return nil
+	   return p.parseExpressionStatement()
 	}
 }
 
@@ -125,7 +142,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	}
 
    return stmt
-	}
+}
 
 
 	// Add entries to Prefix and Infix Position maps. Declares which topkentype gets which fn
@@ -136,3 +153,27 @@ func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 	}
+
+
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement{Token: p.curToken}
+		
+	stmt.Expression = p.parseExpression(LOWEST)
+	if p.peekTokenIs(token.SEMICOLON) {
+			p.nextToken()
+	}
+	return stmt
+}
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.prefixParseFns[p.curToken.Type]
+	if prefix == nil {
+		return nil
+	}
+	leftExp := prefix()
+		return leftExp
+}
+
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+}
